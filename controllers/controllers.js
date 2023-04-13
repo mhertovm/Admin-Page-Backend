@@ -1,13 +1,34 @@
 // const sqlite = require('sqlite3').verbose();
 // const db = new sqlite.Database('database.db');
 // const CryptoJS = require("crypto-js");
-// const { generateAccessToken } = require('../functions/generateAccessToken');
+const { generateAccessToken } = require('../functions/generateAccessToken');
 // const { checkAdmin } = require('../functions/checkAdmin');
 // const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const {Users} = require("./index");
+const {Users, Product} = require("./index");
 
+function getRoot(req, res){
 
+    Product.findAll().then((product)=> {
+        res.status(200).json(product)
+    }).catch((err)=> {
+        res.status(500).json({error: err.message})
+    })
+}
+
+function getById(req, res){
+    const {id} = req.params.id;
+
+    Product.findOne({
+        where: {
+            id: id
+          }
+    }).then((product)=> {
+        res.status(200).json(product)
+    }).catch((err)=> {
+        res.status(500).json({error: err.message})
+    })
+}
 
 async function register(req, res){
     const {name,email,password} = req.body;
@@ -28,7 +49,7 @@ async function register(req, res){
       })
 }
 
-function login (req, res)  {
+function login (req, res){
     const { email, password } = req.body;
 
     Users.findOne({
@@ -38,26 +59,14 @@ function login (req, res)  {
     }).then(async (user)=> {
         const validPassword = await bcrypt.compare(password, user.password);
         if (email===user.email && validPassword){
-            res.send(JSON.stringify({status: "Logged in"}));
-            // const token = generateAccessToken(user.email);
+            const token = generateAccessToken(user.email);
+            res.send(JSON.stringify({status: "Logged in", jwt:token}));
         } else {
             return res.status(400).send("Invalid password");
         }
     }).catch((err)=> {
         res.status(500).json({error: err.message})
     })
-
-
-
-
-    // db.get(sql, [username], function (err, row) {
-    //     if (username == row.username && hashed_password == row.password) {
-    //     const token = generateAccessToken(row.username, row.role);
-    //     res.send(JSON.stringify({ status: "Logged in", jwt:token }));
-    //     } else {
-    //     res.send(JSON.stringify({ status: "Wrong credentials" }));
-    //     }
-    // });
 };
 
-module.exports = {register, login}
+module.exports = {register, login, getRoot, getById}
