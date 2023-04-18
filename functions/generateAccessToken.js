@@ -1,9 +1,9 @@
 
-const SECRET = "123333";
+const SECRET = "123";
 const jwt = require("jsonwebtoken");
 
-function generateAccessToken (username) {
-    jwt.sign({ username}, SECRET, { expiresIn: "36000s" });
+function generateAccessToken (username, role) {
+    return jwt.sign({ username, role}, SECRET, { expiresIn: "36000s" });
 }
 
  module.exports = { generateAccessToken };

@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
-const SECRET = "123333";
+const SECRET = "123";
 
 function authenticateToken(req, res, next) {
     const token = req.headers.authorization;
     console.log(token);
 
-    if (token === null){
+    if (token == null){
         return res.sendStatus(401)
     } 
     

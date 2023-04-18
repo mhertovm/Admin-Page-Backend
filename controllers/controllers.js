@@ -1,9 +1,5 @@
-// const sqlite = require('sqlite3').verbose();
-// const db = new sqlite.Database('database.db');
-// const CryptoJS = require("crypto-js");
-const { generateAccessToken } = require('../functions/generateAccessToken');
-// const { checkAdmin } = require('../functions/checkAdmin');
-// const jwt = require("jsonwebtoken");
+
+const { generateAccessToken } = require("../functions/generateAccessToken")
 const bcrypt = require("bcrypt");
 const {Users, Product} = require("./index");
 
@@ -59,8 +55,8 @@ function login (req, res){
     }).then(async (user)=> {
         const validPassword = await bcrypt.compare(password, user.password);
         if (email===user.email && validPassword){
-            const token = generateAccessToken(user.email);
-            res.send(JSON.stringify({status: "Logged in", jwt:token}));
+            const token = generateAccessToken(user.email, user.role);
+            res.send(JSON.stringify({status: "Logged in", jwt:token, role:user.role}));
         } else {
             return res.status(400).send("Invalid password");
         }
@@ -68,5 +64,6 @@ function login (req, res){
         res.status(500).json({error: err.message})
     })
 };
+
 
 module.exports = {register, login, getRoot, getById}
