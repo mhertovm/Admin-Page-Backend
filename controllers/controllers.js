@@ -1,11 +1,11 @@
 
 const { generateAccessToken } = require("../functions/generateAccessToken")
 const bcrypt = require("bcrypt");
-const {Users, Product} = require("./index");
+const {Users, Product, Category} = require("./index");
 
 function getRoot(req, res){
 
-    Product.findAll().then((product)=> {
+    Product.findAll({ include: Category}).then((product)=> {
         res.status(200).json(product)
     }).catch((err)=> {
         res.status(500).json({error: err.message})
